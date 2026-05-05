@@ -1,0 +1,11 @@
+{
+  "name": "watermark-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/kriskensy/WebDev_watermark-app.git",
+  "author": "kris.kensy <kriskensy@proton.me>",
+  "license": "MIT",
+  "dependencies": {
+    "jimp": "0.6.4"
+  }
+}
