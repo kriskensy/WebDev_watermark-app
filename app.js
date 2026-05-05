@@ -14,3 +14,19 @@ const addTextWatermarkToImage = async function (inputFile, outputFile, text) {
 };
 
 addTextWatermarkToImage('./test.jpg', './test-with-watermark.jpg', 'Hello Kris');
+
+const addImageWatermarkToImage = async function (inputFile, outputFile, watermarkFile) {
+  const image = await Jimp.read(inputFile);
+  const watermark = (await Jimp.read(watermarkFile)).resize(500, Jimp.AUTO);
+  const positionX = image.getWidth() / 2 - watermark.getWidth() / 2;
+  const positionY = image.getHeight() / 2 - watermark.getHeight() / 2;
+
+  image.composite(watermark, positionX, positionY, {
+    mode: Jimp.BLEND_SOURCE_OVER,
+    opacitySource: 0.3,
+  });
+
+  await image.quality(100).writeAsync(outputFile);
+};
+
+addImageWatermarkToImage('./test.jpg', './test-with-watermark2.jpg', './logo.png');
