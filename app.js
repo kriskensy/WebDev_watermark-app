@@ -14,8 +14,6 @@ const addTextWatermarkToImage = async function (inputFile, outputFile, text) {
   await image.quality(100).writeAsync(outputFile);
 };
 
-// addTextWatermarkToImage('./test.jpg', './test-with-watermark.jpg', 'Hello Kris');
-
 const addImageWatermarkToImage = async function (inputFile, outputFile, watermarkFile) {
   const image = await Jimp.read(inputFile);
   const watermark = (await Jimp.read(watermarkFile)).resize(500, Jimp.AUTO);
@@ -30,7 +28,14 @@ const addImageWatermarkToImage = async function (inputFile, outputFile, watermar
   await image.quality(100).writeAsync(outputFile);
 };
 
-// addImageWatermarkToImage('./test.jpg', './test-with-watermark2.jpg', './logo.png');
+const prepareOutputFilename = (filename) => {
+  const dotIndex = filename.lastIndexOf(".");
+  const filenameWithoutExtension = dotIndex > 0 ? filename.slice(0, dotIndex) : filename;
+  const extension = dotIndex > 0 ? filename.slice(dotIndex) : "";
+
+  const withWatermarkText = '-with-watermark';
+  return filenameWithoutExtension + withWatermarkText + extension;
+};
 
 const startApp = async () => {
   //ask if user is rdy
@@ -61,7 +66,9 @@ const startApp = async () => {
       type: 'input',
       message: 'Type your watermark text: ',
     }]);
+
     options.watermarkText = text.value;
+    addTextWatermarkToImage('./img/' + options.inputImage, './img/' + prepareOutputFilename(options.inputImage), options.watermarkText);
   }
 
   if(options.watermarkType === 'Image watermark') {
@@ -71,7 +78,9 @@ const startApp = async () => {
       message: 'Type your watermark name: ',
       default: 'logo.png',
     }]);
+
     options.watermarkImage = image.filename;
+    addImageWatermarkToImage('./img/' + options.inputImage, './img/' + prepareOutputFilename(options.inputImage), './img/' + options.watermarkImage);
   }
 }
 
