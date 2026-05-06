@@ -1,4 +1,5 @@
 const Jimp = require('jimp');
+const inquirer = require('inquirer');
 
 const addTextWatermarkToImage = async function (inputFile, outputFile, text) {
   const image = await Jimp.read(inputFile);
@@ -13,7 +14,7 @@ const addTextWatermarkToImage = async function (inputFile, outputFile, text) {
   await image.quality(100).writeAsync(outputFile);
 };
 
-addTextWatermarkToImage('./test.jpg', './test-with-watermark.jpg', 'Hello Kris');
+// addTextWatermarkToImage('./test.jpg', './test-with-watermark.jpg', 'Hello Kris');
 
 const addImageWatermarkToImage = async function (inputFile, outputFile, watermarkFile) {
   const image = await Jimp.read(inputFile);
@@ -29,4 +30,49 @@ const addImageWatermarkToImage = async function (inputFile, outputFile, watermar
   await image.quality(100).writeAsync(outputFile);
 };
 
-addImageWatermarkToImage('./test.jpg', './test-with-watermark2.jpg', './logo.png');
+// addImageWatermarkToImage('./test.jpg', './test-with-watermark2.jpg', './logo.png');
+
+const startApp = async () => {
+  //ask if user is rdy
+  const answer = await inquirer.prompt([{
+    name: 'start',
+    message: 'Welcome to watermark manager. Copy your img files do `./img` folder. Are you rdy?',
+    type: 'confirm'
+  }]);
+
+  //quit if !answer
+  if(!answer.start) process.exit();
+
+  //ask about input file and watermark type
+  const options = await inquirer.prompt([{
+    name: 'inputImage',
+    type: 'input',
+    message: 'What file do you want to mark?',
+    default: 'test.jpg',
+  }, {
+    name: 'watermarkType',
+    type: 'list',
+    choices: ['Text watermark', 'Image watermark'],
+  }]);
+
+  if(options.watermarkType === 'Text watermark') {
+    const text = await inquirer.prompt([{
+      name: 'value',
+      type: 'input',
+      message: 'Type your watermark text: ',
+    }]);
+    options.watermarkText = text.value;
+  }
+
+  if(options.watermarkType === 'Image watermark') {
+    const image = await inquirer.prompt([{
+      name: 'filename',
+      type: 'input',
+      message: 'Type your watermark name: ',
+      default: 'logo.png',
+    }]);
+    options.watermarkImage = image.filename;
+  }
+}
+
+startApp();
